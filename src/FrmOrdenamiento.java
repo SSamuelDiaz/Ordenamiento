@@ -1,10 +1,7 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class FrmOrdenamiento extends JFrame {
     private JTable tblDatos;
@@ -31,7 +28,7 @@ public class FrmOrdenamiento extends JFrame {
         txtBuscar.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                btnBuscar.doClick(); 
+                btnBuscar.doClick();
             }
         });
 
@@ -101,9 +98,7 @@ public class FrmOrdenamiento extends JFrame {
 
         int criterio = getCriterio();
 
-        Documento.ordenarRapido(0, Documento.getTamaño() - 1, criterio);
-
-        int posicion = Documento.busquedaBinariaRecursiva(texto, criterio);
+        int posicion = Documento.busquedaLineal(texto, criterio);
 
         if (posicion != -1) {
             filaResaltada = posicion;
@@ -213,6 +208,7 @@ public class FrmOrdenamiento extends JFrame {
         SwingUtilities.invokeLater(() -> new FrmOrdenamiento().setVisible(true));
     }
 }
+
 
 
 

@@ -42,7 +42,6 @@ public class Documento {
     private static List<Documento> documentos = new ArrayList<Documento>();
     private static String[] encabezados;
 
-
     public static int getTamaño(){
         return documentos.size();
     }
@@ -135,11 +134,12 @@ public class Documento {
         if (inicio >= fin) {
             return;
         }
-       
+
         int pivote = localizarPivote(inicio, fin, criterio);
-        ordenarRapido(inicio, pivote - 1, criterio); 
-        ordenarRapido(pivote + 1, fin, criterio); 
+        ordenarRapido(inicio, pivote - 1, criterio);
+        ordenarRapido(pivote + 1, fin, criterio);
     }
+
     public static void ordenarInsercion(int criterio) {
         for (int i = 1; i < documentos.size(); i++) {
             Documento actual = documentos.get(i);
@@ -151,6 +151,7 @@ public class Documento {
             documentos.set(j + 1, actual);
         }
     }
+
     public static void ordenarSeleccion(int criterio) {
         for (int i = 0; i < documentos.size() - 1; i++) {
             int minIndex = i;
@@ -164,24 +165,25 @@ public class Documento {
             }
         }
     }
+
     public static void ordenarMezcla(int criterio) {
         documentos = mergeSort(documentos, criterio);
     }
-    
+
     private static List<Documento> mergeSort(List<Documento> lista, int criterio) {
         if (lista.size() <= 1) return lista;
-    
+
         int mid = lista.size() / 2;
         List<Documento> izquierda = mergeSort(lista.subList(0, mid), criterio);
         List<Documento> derecha = mergeSort(lista.subList(mid, lista.size()), criterio);
-    
+
         return mezclar(izquierda, derecha, criterio);
     }
-    
+
     private static List<Documento> mezclar(List<Documento> izq, List<Documento> der, int criterio) {
         List<Documento> resultado = new ArrayList<>();
         int i = 0, j = 0;
-    
+
         while (i < izq.size() && j < der.size()) {
             if (esMayor(izq.get(i), der.get(j), criterio)) {
                 resultado.add(der.get(j));
@@ -191,43 +193,58 @@ public class Documento {
                 i++;
             }
         }
-    
+
         while (i < izq.size()) resultado.add(izq.get(i++));
         while (j < der.size()) resultado.add(der.get(j++));
-    
+
         return resultado;
     }
-    
+
+    // Método de búsqueda lineal que agregamos:
+    public static int busquedaLineal(String texto, int criterio) {
+        texto = normalizar(texto);
+
+        for (int i = 0; i < documentos.size(); i++) {
+            Documento d = documentos.get(i);
+            String valor = (criterio == 0) ? d.getNombreCompleto() : d.getDocumento();
+            valor = normalizar(valor);
+
+            if (valor.equals(texto)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public static int busquedaBinariaRecursiva(String nombre, int criterio) {
-    return busquedaBinariaRecursiva(normalizar(nombre), 0, documentos.size() - 1, criterio);
-}
+        return busquedaBinariaRecursiva(normalizar(nombre), 0, documentos.size() - 1, criterio);
+    }
 
-private static int busquedaBinariaRecursiva(String nombre, int inicio, int fin, int criterio) {
-    if (inicio > fin) return -1;
+    private static int busquedaBinariaRecursiva(String nombre, int inicio, int fin, int criterio) {
+        if (inicio > fin) return -1;
 
-    int medio = (inicio + fin) / 2;
-    Documento actual = documentos.get(medio);
+        int medio = (inicio + fin) / 2;
+        Documento actual = documentos.get(medio);
 
-    String valorActual = normalizar((criterio == 0) ? actual.getNombreCompleto() : actual.getDocumento());
-    int comparacion = nombre.compareTo(valorActual);
+        String valorActual = normalizar((criterio == 0) ? actual.getNombreCompleto() : actual.getDocumento());
+        int comparacion = nombre.compareTo(valorActual);
 
-    if (comparacion == 0) {
-        return medio;
-    } else if (comparacion < 0) {
-        return busquedaBinariaRecursiva(nombre, inicio, medio - 1, criterio);
-    } else {
-        return busquedaBinariaRecursiva(nombre, medio + 1, fin, criterio);
+        if (comparacion == 0) {
+            return medio;
+        } else if (comparacion < 0) {
+            return busquedaBinariaRecursiva(nombre, inicio, medio - 1, criterio);
+        } else {
+            return busquedaBinariaRecursiva(nombre, medio + 1, fin, criterio);
+        }
+    }
+
+    private static String normalizar(String texto) {
+        return java.text.Normalizer.normalize(texto, java.text.Normalizer.Form.NFD)
+                .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "")
+                .replaceAll("\\s+", " ")
+                .trim()
+                .toLowerCase();
     }
 }
 
-private static String normalizar(String texto) {
-    return java.text.Normalizer.normalize(texto, java.text.Normalizer.Form.NFD)
-            .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "")
-            .replaceAll("\\s+", " ")
-            .trim()
-            .toLowerCase();
-}
-
-
-}
  
