@@ -198,4 +198,36 @@ public class Documento {
         return resultado;
     }
     
+    public static int busquedaBinariaRecursiva(String nombre, int criterio) {
+    return busquedaBinariaRecursiva(normalizar(nombre), 0, documentos.size() - 1, criterio);
 }
+
+private static int busquedaBinariaRecursiva(String nombre, int inicio, int fin, int criterio) {
+    if (inicio > fin) return -1;
+
+    int medio = (inicio + fin) / 2;
+    Documento actual = documentos.get(medio);
+
+    String valorActual = normalizar((criterio == 0) ? actual.getNombreCompleto() : actual.getDocumento());
+    int comparacion = nombre.compareTo(valorActual);
+
+    if (comparacion == 0) {
+        return medio;
+    } else if (comparacion < 0) {
+        return busquedaBinariaRecursiva(nombre, inicio, medio - 1, criterio);
+    } else {
+        return busquedaBinariaRecursiva(nombre, medio + 1, fin, criterio);
+    }
+}
+
+private static String normalizar(String texto) {
+    return java.text.Normalizer.normalize(texto, java.text.Normalizer.Form.NFD)
+            .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "")
+            .replaceAll("\\s+", " ")
+            .trim()
+            .toLowerCase();
+}
+
+
+}
+ 

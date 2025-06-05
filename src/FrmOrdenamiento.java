@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,6 +14,7 @@ public class FrmOrdenamiento extends JFrame {
     private JLabel lblTiempo;
     private Timer temporizador;
     private long inicioTiempo;
+    private int filaResaltada = -1;
 
     public FrmOrdenamiento() {
         setTitle("Ordenamiento de Datos");
@@ -25,6 +27,13 @@ public class FrmOrdenamiento extends JFrame {
 
         txtBuscar = new JTextField(20);
         panelNorte.add(txtBuscar);
+
+        txtBuscar.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                btnBuscar.doClick(); 
+            }
+        });
 
         btnBuscar = crearBoton("Buscar.png");
         btnBuscar.addActionListener(this::btnBuscar);
@@ -90,7 +99,40 @@ public class FrmOrdenamiento extends JFrame {
             return;
         }
 
-        JOptionPane.showMessageDialog(this, "Buscaría: " + texto);
+        int criterio = getCriterio();
+
+        Documento.ordenarRapido(0, Documento.getTamaño() - 1, criterio);
+
+        int posicion = Documento.busquedaBinariaRecursiva(texto, criterio);
+
+        if (posicion != -1) {
+            filaResaltada = posicion;
+            Documento.mostrar(tblDatos);
+            tblDatos.setRowSelectionInterval(posicion, posicion);
+            tblDatos.scrollRectToVisible(tblDatos.getCellRect(posicion, 0, true));
+            JOptionPane.showMessageDialog(this, "Elemento encontrado en la posición: " + posicion);
+        } else {
+            filaResaltada = -1;
+            Documento.mostrar(tblDatos);
+            JOptionPane.showMessageDialog(this, "Elemento no encontrado.");
+        }
+
+        tblDatos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                           boolean isSelected, boolean hasFocus,
+                                                           int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (row == filaResaltada) {
+                    c.setBackground(new Color(173, 216, 230));
+                } else {
+                    c.setBackground(Color.WHITE);
+                }
+                return c;
+            }
+        });
+
+        tblDatos.repaint();
     }
 
     private void ejecutarOrdenamiento(String tipo) {
@@ -171,6 +213,7 @@ public class FrmOrdenamiento extends JFrame {
         SwingUtilities.invokeLater(() -> new FrmOrdenamiento().setVisible(true));
     }
 }
+
 
 
 
